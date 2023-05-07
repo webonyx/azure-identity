@@ -1,0 +1,31 @@
+{
+    "name": "webonyx/azure-identity",
+    "type": "library",
+    "require": {
+        "psr/http-client": "^1.0",
+        "php-http/discovery": "^1.18",
+        "psr/http-client-implementation": "*",
+        "psr/http-factory-implementation": "*"
+    },
+    "require-dev": {
+        "symfony/http-client": "^6.2",
+        "nyholm/psr7": "^1.8"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Azure\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Viet Pham",
+            "email": "viet@webonyx.com"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
