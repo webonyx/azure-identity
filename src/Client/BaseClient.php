@@ -7,6 +7,8 @@ use Nyholm\Psr7\Stream;
 
 abstract class BaseClient
 {
+    const DEFAULT_AZURE_AUTHORITY_HOST = 'https://login.microsoftonline.com/';
+
     protected Psr18Client $httpClient;
 
     public function __construct(protected array $options = [])
@@ -19,11 +21,21 @@ abstract class BaseClient
         return $this->options['tenant_id'] ?? 'common';
     }
 
+    protected function getAuthority(): string
+    {
+        $authority = $this->options['authority'] ?? $_SERVER['AZURE_AUTHORITY_HOST'] ?? self::DEFAULT_AZURE_AUTHORITY_HOST;
+        if (!str_starts_with($authority, 'http')) {
+            $authority = "https://$authority";
+        }
+
+        return $authority;
+    }
+
     abstract public function getToken(array $scopes, array $options = []): array;
 
     protected function getTokenEndpoint(): string
     {
-        return "https://login.microsoftonline.com/{$this->getTenantId()}/oauth2/v2.0/token";
+        return implode('/', [rtrim($this->getAuthority(), '/'), $this->getTenantId(), 'oauth2/v2.0/token']);
     }
 
     protected function executePostToTokenEndpoint(string $tokenEndpoint, string $queryString, array $headers = []): array

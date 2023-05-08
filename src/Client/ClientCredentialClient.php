@@ -16,7 +16,7 @@ class ClientCredentialClient extends BaseClient
         $params = [
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'scope' => implode(',', [...$scopes]),
+            'scope' => implode(',', $scopes),
             'grant_type' => 'client_credentials',
         ];
 

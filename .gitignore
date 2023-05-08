@@ -1,6 +1,5 @@
 .idea
 vendor
-fixtures
 test.php
 workload.yaml
 bootstrap.sh

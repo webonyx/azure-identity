@@ -4,11 +4,11 @@ namespace Azure\Client;
 
 class ClientAssertionClient extends BaseClient
 {
-    public function __construct(private string $tenantId, private string $clientId, public \Closure $getAssertion)
+    const JWT_BEARER_ASSERTION = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer';
+
+    public function __construct(private string $tenantId, private string $clientId, public \Closure $getAssertion, array $options = [])
     {
-        parent::__construct([
-            'tenant_id' => $this->tenantId
-        ]);
+        parent::__construct(array_merge($options, ['tenant_id' => $this->tenantId]));
     }
 
     public function getToken(array $scopes, array $options = []): array
@@ -16,7 +16,9 @@ class ClientAssertionClient extends BaseClient
         $params = [
             'client_id' => $this->clientId,
             'scope' => implode(',', [...$scopes]),
-            'grant_type' => 'client_assertion',
+            'client_assertion_type' => self::JWT_BEARER_ASSERTION,
+            'client_assertion' => ($this->getAssertion)(),
+            'grant_type' => 'client_credentials',
         ];
 
         // clientAssertion
@@ -25,12 +27,5 @@ class ClientAssertionClient extends BaseClient
         return $this->executePostToTokenEndpoint($this->getTokenEndpoint(), $queryString);
     }
 
-    protected function getClientAssertion()
-    {
-        $getAssertion = $this->getAssertion;
-        return [
-            'assertion' => $getAssertion(),
-            'assertionType' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-        ];
-    }
+
 }

@@ -4,7 +4,7 @@ namespace Azure\Identity;
 
 class AccessToken implements AccessTokenInterface
 {
-    public function __construct(public string $accessToken, public int $expiresIn)
+    public function __construct(public string $token, public int $expiresIn)
     {
     }
 
