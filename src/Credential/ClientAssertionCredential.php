@@ -2,9 +2,9 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Client\ClientAssertionClient;
 use Azure\Identity\AccessToken;
 use Azure\Identity\AccessTokenInterface;
+use Azure\Identity\Client\ClientAssertionClient;
 use Azure\Identity\Exception\CredentialRequestErrorException;
 
 class ClientAssertionCredential implements TokenCredentialInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace Azure\Client;
+namespace Azure\Identity\Client;
 
 class ClientAssertionClient extends BaseClient
 {
@@ -11,21 +11,14 @@ class ClientAssertionClient extends BaseClient
         parent::__construct(array_merge($options, ['tenant_id' => $this->tenantId]));
     }
 
-    public function getToken(array $scopes, array $options = []): array
+    public function getOauth2Parameters(array $scopes, array $options = []): array
     {
-        $params = [
+        return [
             'client_id' => $this->clientId,
-            'scope' => implode(',', [...$scopes]),
+            'scope' => implode(',', $scopes),
             'client_assertion_type' => self::JWT_BEARER_ASSERTION,
             'client_assertion' => ($this->getAssertion)(),
             'grant_type' => 'client_credentials',
         ];
-
-        // clientAssertion
-        $queryString = $this->buildQueryString($params);
-
-        return $this->executePostToTokenEndpoint($this->getTokenEndpoint(), $queryString);
     }
-
-
 }

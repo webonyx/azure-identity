@@ -2,7 +2,6 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\AccessToken;
 use Azure\Identity\AccessTokenInterface;
 use Azure\Identity\Exception\CredentialUnavailableException;
 

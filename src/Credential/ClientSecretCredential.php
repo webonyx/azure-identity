@@ -2,9 +2,9 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Client\ClientCredentialClient;
 use Azure\Identity\AccessToken;
 use Azure\Identity\AccessTokenInterface;
+use Azure\Identity\Client\ClientCredentialClient;
 
 class ClientSecretCredential implements TokenCredentialInterface
 {

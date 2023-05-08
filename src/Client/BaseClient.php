@@ -1,6 +1,6 @@
 <?php
 
-namespace Azure\Client;
+namespace Azure\Identity\Client;
 
 use Http\Discovery\Psr18Client;
 use Nyholm\Psr7\Stream;
@@ -31,7 +31,15 @@ abstract class BaseClient
         return $authority;
     }
 
-    abstract public function getToken(array $scopes, array $options = []): array;
+    public function getToken(array $scopes, array $options = []): array
+    {
+        $params = $this->getOauth2Parameters($scopes, $options);
+        $queryString = $this->buildQueryString($params);
+
+        return $this->executePostToTokenEndpoint($this->getTokenEndpoint(), $queryString);
+    }
+
+    abstract public function getOauth2Parameters(array $scopes, array $options = []): array;
 
     protected function getTokenEndpoint(): string
     {

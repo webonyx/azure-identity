@@ -1,6 +1,6 @@
 <?php
 
-namespace Azure\Client;
+namespace Azure\Identity\Client;
 
 class ClientCredentialClient extends BaseClient
 {
@@ -11,17 +11,13 @@ class ClientCredentialClient extends BaseClient
         ]);
     }
 
-    public function getToken(array $scopes, array $options = []): array
+    public function getOauth2Parameters(array $scopes, array $options = []): array
     {
-        $params = [
+        return [
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
             'scope' => implode(',', $scopes),
             'grant_type' => 'client_credentials',
         ];
-
-        $queryString = $this->buildQueryString($params);
-
-        return $this->executePostToTokenEndpoint($this->getTokenEndpoint(), $queryString);
     }
 }
