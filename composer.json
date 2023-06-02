@@ -1,6 +1,8 @@
 {
     "name": "webonyx/azure-identity",
     "type": "library",
+    "version": "0.0.1",
+    "keywords": [ "php", "azure", "identity" ],
     "require": {
         "psr/http-client": "^1.0",
         "php-http/discovery": "^1.18",
