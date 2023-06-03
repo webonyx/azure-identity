@@ -2,13 +2,31 @@
 
 namespace Azure\Identity\Credential;
 
-class DefaultAzureCredential extends ChainedTokenCredential implements TokenCredentialInterface
+use Azure\Identity\HttpClient\HttpClientFactory;
+use Azure\Identity\TokenInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+class DefaultAzureCredential implements TokenCredentialInterface
 {
-    public function __construct(array $config = [])
+    private TokenCredentialInterface $cacheable;
+
+    public function __construct(array $config = [], ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {
-        parent::__construct([
-            new EnvironmentCredential(),
-            new WorkloadIdentityCredential($config),
-        ]);
+        $logger = $logger ?? new NullLogger();
+        if (null === $httpClient) {
+            $httpClient = HttpClientFactory::createRetryableClient(null, $logger);
+        }
+
+        $this->cacheable = new CacheCredential(
+            ChainTokenCredential::createDefaultChain($config, $httpClient, $logger)
+        );
+    }
+
+    public function getToken(array $scopes, array $options = []): ?TokenInterface
+    {
+        return $this->cacheable->getToken($scopes, $options);
     }
 }

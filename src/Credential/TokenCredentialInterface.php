@@ -2,13 +2,9 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\AccessTokenInterface;
-use Azure\Identity\Exception\CredentialUnavailableException;
+use Azure\Identity\TokenInterface;
 
 interface TokenCredentialInterface
 {
-    /**
-     * @throws CredentialUnavailableException
-     */
-    public function getToken(array $scopes, array $options = []): AccessTokenInterface;
+    public function getToken(array $scopes, array $options = []): ?TokenInterface;
 }

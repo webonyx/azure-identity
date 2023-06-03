@@ -2,22 +2,24 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\AccessTokenInterface;
-use Azure\Identity\Exception\CredentialUnavailableException;
+use Azure\Identity\EnvVar;
+use Azure\Identity\TokenInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class WorkloadIdentityCredential implements TokenCredentialInterface
 {
-    public ?ClientAssertionCredential $clientAssertionCredential = null;
+    private $logger;
 
-    public function __construct(array $options = [])
+    private $httpClient;
+
+    private ?string $tokenFilePath;
+
+    public function __construct(array $options = [], ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {
-        $tenantId = $options['tenantId'] ?? $_SERVER['AZURE_TENANT_ID'] ?? getenv('AZURE_TENANT_ID');
-        $clientId = $options['clientId'] ?? $_SERVER['AZURE_CLIENT_ID'] ?? getenv('AZURE_CLIENT_ID');
-        $tokenFilePath = $options['tokenFilePath'] ?? $_SERVER['AZURE_FEDERATED_TOKEN_FILE'] ?? getenv('AZURE_FEDERATED_TOKEN_FILE');
-
-        if ($tenantId && $clientId && $tokenFilePath) {
-            $this->clientAssertionCredential = new ClientAssertionCredential($tenantId, $clientId, fn() => $this->getTokenFileContents($tokenFilePath));
-        }
+        $this->tokenFilePath = $options['tokenFilePath'] ?? EnvVar::get('AZURE_FEDERATED_TOKEN_FILE');
+        $this->httpClient = $httpClient;
+        $this->logger = $logger;
     }
 
     protected function getTokenFileContents(string $tokenFilePath): string
@@ -25,16 +27,19 @@ class WorkloadIdentityCredential implements TokenCredentialInterface
         return file_get_contents($tokenFilePath);
     }
 
-    public function getToken(array $scopes, array $options = []): AccessTokenInterface
+    public function getToken(array $scopes, array $options = []): ?TokenInterface
     {
-        if (!$this->clientAssertionCredential) {
-            throw new CredentialUnavailableException(' WorkloadIdentityCredential: is unavailable. tenantId, clientId, and federatedTokenFilePath are required parameters. 
-      In DefaultAzureCredential and ManagedIdentityCredential, these can be provided as environment variables - 
-      "AZURE_TENANT_ID",
-      "AZURE_CLIENT_ID",
-      "AZURE_FEDERATED_TOKEN_FILE". See the troubleshooting guide for more information: https://aka.ms/azsdk/js/identity/workloadidentitycredential/troubleshoot');
+        if (!$this->tokenFilePath) {
+            return null;
         }
 
-        return $this->clientAssertionCredential->getToken($scopes, $options);
+        $tenantId = EnvVar::get('AZURE_TENANT_ID');
+        $clientId = EnvVar::get('AZURE_CLIENT_ID');
+        if (!$tenantId || !$clientId) {
+            return null;
+        }
+
+        $client = new ClientAssertionCredential($tenantId, $clientId, fn() => $this->getTokenFileContents($this->tokenFilePath), $this->httpClient, $this->logger);
+        return $client->getToken($scopes);
     }
 }

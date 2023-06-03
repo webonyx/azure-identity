@@ -7,16 +7,8 @@ $_SERVER['AZURE_CLIENT_ID'] = 'ca76a582-01ea-4c6c-8249-669f79883f2e';
 $_SERVER['AZURE_FEDERATED_TOKEN_FILE'] = 'sample/azure-identity-token';
 
 use Azure\Identity\Credential\DefaultAzureCredential;
-use Azure\Identity\Exception\CredentialUnavailableException;
 
 $credential = new DefaultAzureCredential();
 
-try {
-    $token = $credential->getToken(['https://servicebus.azure.net//.default']);
-    var_dump($token);
-} catch (CredentialUnavailableException $exception) {
-    print_r([
-        'message' => $exception->getMessage(),
-        'location' => sprintf('%s:%d', $exception->getFile(), $exception->getLine()),
-    ]);
-}
+$token = $credential->getToken(['https://servicebus.azure.net//.default']);
+var_dump($token);

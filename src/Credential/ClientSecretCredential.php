@@ -2,23 +2,22 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\AccessToken;
-use Azure\Identity\AccessTokenInterface;
-use Azure\Identity\Client\ClientCredentialClient;
+use Azure\Identity\TokenInterface;
+use Azure\Identity\Client\AadClient;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ClientSecretCredential implements TokenCredentialInterface
 {
-    private ClientCredentialClient $client;
+    private AadClient $client;
 
-    public function __construct(string $tenantId, string $clientId, string $clientSecret)
+    public function __construct(string $tenantId, string $clientId, private string $clientSecret, ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {
-        $this->client = new ClientCredentialClient($tenantId, $clientId, $clientSecret);
+        $this->client = new AadClient($tenantId, $clientId, $httpClient, $logger);
     }
 
-    public function getToken(array $scopes, array $options = []): AccessTokenInterface
+    public function getToken(array $scopes, array $options = []): ?TokenInterface
     {
-        $token = $this->client->getToken($scopes, $options);
-
-        return AccessToken::fromArray($token);
+        return $this->client->fetchTokenByClientSecret($this->clientSecret, $scopes);
     }
 }

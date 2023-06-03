@@ -2,37 +2,41 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\AccessTokenInterface;
-use Azure\Identity\Exception\CredentialUnavailableException;
+use Azure\Identity\EnvVar;
+use Azure\Identity\TokenInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Required environment variables:
  * - `AZURE_TENANT_ID`: The Azure Active Directory tenant (directory) ID.
  * - `AZURE_CLIENT_ID`: The client (application) ID of an App Registration in the tenant.
- *
- * @todo Support ClientCertificateCredential
  */
 class EnvironmentCredential implements TokenCredentialInterface
 {
-    private ?ClientSecretCredential $credential = null;
+    private $logger;
 
-    public function __construct()
+    private $httpClient;
+
+    public function __construct(?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {
-        $tenantId = $_SERVER['AZURE_TENANT_ID'] ?? getenv('AZURE_TENANT_ID');
-        $clientId = $_SERVER['AZURE_CLIENT_ID'] ?? getenv('AZURE_CLIENT_ID');
-        $clientSecret = $_SERVER['AZURE_CLIENT_SECRET'] ?? getenv('AZURE_CLIENT_SECRET');
-
-        if ($tenantId && $clientId && $clientSecret) {
-            $this->credential = new ClientSecretCredential($tenantId, $clientId, $clientSecret);
-        }
+        $this->logger = $logger;
+        $this->httpClient = $httpClient;
     }
 
-    public function getToken(array $scopes, array $options = []): AccessTokenInterface
+    public function getToken(array $scopes, array $options = []): ?TokenInterface
     {
-        if (!$this->credential) {
-            throw new CredentialUnavailableException('EnvironmentCredential is unavailable. No underlying credential could be used.');
+        $tenantId = EnvVar::get('AZURE_TENANT_ID');
+        $clientId = EnvVar::get('AZURE_CLIENT_ID');
+        if (!$tenantId || !$clientId) {
+            return null;
         }
 
-        return $this->credential->getToken($scopes, $options);
+        if (null !== $clientSecret = EnvVar::get('AZURE_CLIENT_SECRET')) {
+            $client = new ClientSecretCredential($tenantId, $clientId, $clientSecret, $this->httpClient, $this->logger);
+            return $client->getToken($scopes);
+        }
+
+        return null;
     }
 }
