@@ -8,10 +8,7 @@ class Token implements TokenInterface
 
     private $expireDate;
 
-    /**
-     * @throws \Exception
-     */
-    public function __construct(public string $token, public int $expiresIn)
+    public function __construct(public string $accessToken, public int $expiresIn)
     {
         $this->expireDate = (new \DateTimeImmutable())
             ->add(new \DateInterval(sprintf('PT%dS', $expiresIn)))
@@ -24,8 +21,13 @@ class Token implements TokenInterface
     }
 
     /**
-     * @throws \Exception
+     * @return \DateTimeImmutable
      */
+    public function getExpireDate(): \DateTimeImmutable
+    {
+        return $this->expireDate;
+    }
+
     public static function fromArray(array $token): TokenInterface
     {
         return new self($token['access_token'], $token['expires_in']);

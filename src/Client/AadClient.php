@@ -59,7 +59,7 @@ class AadClient
             ]);
             $result = $response->toArray();
         } catch (DecodingExceptionInterface $e) {
-            $this->logger->info('Failed to decode Credentials.', ['exception' => $e]);
+            $this->logger->info('Failed to decode token response.', ['exception' => $e]);
 
             return null;
         } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
