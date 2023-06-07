@@ -7,7 +7,7 @@ use Azure\Identity\TokenInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class WorkloadIdentityCredential implements TokenCredentialInterface
+class WorkloadIdentityCredential implements AzureCredentialInterface
 {
     private $logger;
 

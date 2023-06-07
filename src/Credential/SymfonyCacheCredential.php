@@ -8,9 +8,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class SymfonyCacheCredential implements TokenCredentialInterface
+class SymfonyCacheCredential implements AzureCredentialInterface
 {
-    public function __construct(private TokenCredentialInterface $decorated, private CacheInterface $cache, private ?LoggerInterface $logger = null)
+    public function __construct(private AzureCredentialInterface $decorated, private CacheInterface $cache, private ?LoggerInterface $logger = null)
     {
     }
 

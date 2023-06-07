@@ -28,10 +28,5 @@
             "name": "Viet Pham",
             "email": "viet@webonyx.com"
         }
-    ],
-    "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        }
-    }
+    ]
 }

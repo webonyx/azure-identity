@@ -25,7 +25,7 @@ class AadClient
 
     private int $timeout;
 
-    public function __construct(private string $tenantId, private string $clientId, ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null, int $timeout = 5)
+    public function __construct(private string $tenantId, private string $clientId, ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null, int $timeout = 20)
     {
         $this->logger = $logger ?? new NullLogger();
         $this->httpClient = $httpClient ?? HttpClient::create();

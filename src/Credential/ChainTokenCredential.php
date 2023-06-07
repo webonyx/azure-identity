@@ -7,15 +7,15 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
-class ChainTokenCredential implements TokenCredentialInterface, ResetInterface
+class ChainTokenCredential implements AzureCredentialInterface, ResetInterface
 {
     /**
-     * @var TokenCredentialInterface[]
+     * @var AzureCredentialInterface[]
      */
     private array $credentials;
 
     /**
-     * @var TokenCredentialInterface[]
+     * @var AzureCredentialInterface[]
      */
     private array $lastSuccessfulCredentials = [];
 
@@ -24,7 +24,7 @@ class ChainTokenCredential implements TokenCredentialInterface, ResetInterface
         $this->credentials = $credentials;
     }
 
-    public static function createDefaultChain(array $config, ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null): TokenCredentialInterface
+    public static function createDefaultChain(array $config, ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null): AzureCredentialInterface
     {
         return new ChainTokenCredential([
             new EnvironmentCredential($httpClient, $logger),

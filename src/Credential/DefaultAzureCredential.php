@@ -6,12 +6,11 @@ use Azure\Identity\HttpClient\HttpClientFactory;
 use Azure\Identity\TokenInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class DefaultAzureCredential implements TokenCredentialInterface
+class DefaultAzureCredential implements AzureCredentialInterface
 {
-    private TokenCredentialInterface $cacheable;
+    private AzureCredentialInterface $cacheable;
 
     public function __construct(array $config = [], ?HttpClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {

@@ -7,7 +7,7 @@ use Azure\Identity\Client\AadClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ClientSecretCredential implements TokenCredentialInterface
+class ClientSecretCredential implements AzureCredentialInterface
 {
     private AadClient $client;
 

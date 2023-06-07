@@ -2,9 +2,6 @@
 
 namespace Azure\Identity\Credential;
 
-use Azure\Identity\TokenInterface;
-
-interface TokenCredentialInterface
+interface TokenCredentialInterface extends AzureCredentialInterface
 {
-    public function getToken(array $scopes, array $options = []): ?TokenInterface;
 }

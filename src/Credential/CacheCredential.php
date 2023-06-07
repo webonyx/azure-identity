@@ -5,14 +5,14 @@ namespace Azure\Identity\Credential;
 use Azure\Identity\TokenInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
-class CacheCredential implements TokenCredentialInterface, ResetInterface
+class CacheCredential implements AzureCredentialInterface, ResetInterface
 {
     /**
      * @var (null|TokenInterface)[]
      */
     private array $cache = [];
 
-    public function __construct(private TokenCredentialInterface $decorated)
+    public function __construct(private AzureCredentialInterface $decorated)
     {
 
     }

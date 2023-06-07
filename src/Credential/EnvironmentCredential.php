@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * - `AZURE_TENANT_ID`: The Azure Active Directory tenant (directory) ID.
  * - `AZURE_CLIENT_ID`: The client (application) ID of an App Registration in the tenant.
  */
-class EnvironmentCredential implements TokenCredentialInterface
+class EnvironmentCredential implements AzureCredentialInterface
 {
     private $logger;
 
@@ -26,8 +26,14 @@ class EnvironmentCredential implements TokenCredentialInterface
 
     public function getToken(array $scopes, array $options = []): ?TokenInterface
     {
-        $tenantId = EnvVar::get('AZURE_TENANT_ID');
         $clientId = EnvVar::get('AZURE_CLIENT_ID');
+
+        if (EnvVar::get('IDENTITY_ENDPOINT') && EnvVar::get('IDENTITY_HEADER')) {
+            $client = new AppServiceCredential($clientId, $this->httpClient, $this->logger);
+            return $client->getToken($scopes, $options);
+        }
+
+        $tenantId = EnvVar::get('AZURE_TENANT_ID');
         if (!$tenantId || !$clientId) {
             return null;
         }
